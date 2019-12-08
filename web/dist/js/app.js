@@ -117,8 +117,8 @@ weatherApp.controller('forecastController', [
         $scope.items = [];
 
         $scope.endpoints = [
-            'http://api.openweathermap.org/data/2.5/weather',
-            'http://api.openweathermap.org/data/2.5/forecast',
+            'https://api.openweathermap.org/data/2.5/weather',
+            'https://api.openweathermap.org/data/2.5/forecast',
         ];
 
         $scope.apiServices = {
