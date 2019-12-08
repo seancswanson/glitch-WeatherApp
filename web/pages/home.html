@@ -1,0 +1,31 @@
+<div class="home-container">
+  <div class="map-container container" ng-controller="mapController">
+    <leaflet
+      id="map"
+      center="center"
+      ng-click="updateCoords(this.center)"
+    ></leaflet>
+  </div>
+  <!-- <h2 ng-model="currentLocation">
+    It looks like you are located at {{ currentLocation.latitude }}
+  </h2>
+  <div ng-click="getCurrentLocation()">Get it!</div> -->
+
+  <div class="input-container container">
+    <div class="top">
+      <h1>Show me the weather for...</h1>
+      <input
+        type="text"
+        class="location-input"
+        placeholder="Seattle, NYC, Chicago..."
+        ng-model="city"
+      />
+      <div class="coordinates-button" ng-click="applyMapCoords(this)"></div>
+    </div>
+    <div class="bottom">
+      <a href="#/forecast" class="button button--primary" ng-click="setCity()"
+        >Get Forecast</a
+      >
+    </div>
+  </div>
+</div>

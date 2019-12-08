@@ -1,0 +1,73 @@
+// out: ../css/home.css, compress: true, strictMath: true
+
+.home-container {
+  display: grid;
+
+  color: #333;
+
+  grid-template-columns: auto;
+  grid-template-rows: auto auto auto;
+  justify-items: left;
+  align-items: center;
+
+  .map-container {
+    width: 100%;
+
+    #map {
+      height: 300px;
+    }
+  }
+
+  .input-container {
+    position: relative;
+    // display: grid;
+    // grid-template-columns: 1fr 1fr;
+    // grid-template-rows: 60px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .top {
+      display: grid;
+      grid-template-columns: 1fr 1fr 20px;
+      grid-template-rows: 60px;
+
+      input {
+        font-size: 30px;
+
+        display: block;
+
+        min-width: 300px;
+        height: auto;
+        padding-top: 10px;
+
+        color: #333;
+        border: none;
+        border-bottom: 4px solid #333;
+        outline: none;
+        background: rgba(255, 255, 255, 0);
+        white-space: nowrap;
+        overflow: scroll;
+      }
+
+      .coordinates-button {
+        position: absolute;
+        right: 1rem;
+        background: url(./map.png) center center no-repeat;
+        background-size: cover;
+        height: 24px;
+        width: 24px;
+      }
+
+      @media screen and (max-width: 900px) {
+        grid-template-columns: 1fr;
+      }
+    }
+    .bottom {
+      margin-top: 1rem;
+      height: 40px;
+      .button {
+      }
+    }
+  }
+}

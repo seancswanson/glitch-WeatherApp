@@ -1,0 +1,32 @@
+// out: ../css/buttons.css, compress: true, strictMath: true
+
+.button {
+  position: relative;
+  top: 0;
+
+  display: block;
+
+  padding: 10px 25px;
+
+  transition: top ease 0.25s, border ease 0.25s;
+  text-decoration: none;
+  text-align: center;
+
+  color: white;
+  border-right: 1px solid transparent;
+  border-bottom: 0 solid transparent;
+  border-radius: 2px;
+  box-shadow: 0 5px 10px rgba(154, 160, 185, 0.05),
+    0 15px 40px rgba(166, 173, 201, 0.2);
+}
+
+.button--primary {
+  background-color: rgb(28, 184, 65);
+  border: 1px solid transparent;
+  transition: all cubic-bezier(0.311, 0.441, 0.444, 1.1) 0.3s;
+
+  &:hover {
+    background: rgb(24, 160, 56);
+    border: 1px dotted #ffffff5c;
+  }
+}
