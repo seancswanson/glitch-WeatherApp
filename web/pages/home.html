@@ -3,7 +3,7 @@
     <leaflet
       id="map"
       center="center"
-      ng-click="updateCoords(this.center)"
+      ng-mousedown="updateCoords(this.center)"
     ></leaflet>
   </div>
   <!-- <h2 ng-model="currentLocation">
@@ -20,12 +20,23 @@
         placeholder="Seattle, NYC, Chicago..."
         ng-model="city"
       />
-      <div class="coordinates-button" ng-click="applyMapCoords(this)"></div>
+      <div class="coordinates-button" ng-click="applyMapCoords()"></div>
     </div>
     <div class="bottom">
-      <a href="#/forecast" class="button button--primary" ng-click="setCity()"
-        >Get Forecast</a
-      >
+      <div class="button button--primary" ng-click="setCity()">
+        Get Forecast
+      </div>
     </div>
+  </div>
+  <div class="error-message container">
+    <div>
+      Please enter the name of a city.
+    </div>
+    <div>
+      Using the map, you can navigate to a location and click
+      <div class="coordinates-button"></div>
+      to grab the city name from the current coordinates.
+    </div>
+    <div class="close-button">&times;</div>
   </div>
 </div>

@@ -1,1 +1,1 @@
-.footer-container{margin-top:100px;height:200px;background:#333;display:flex;justify-content:center;align-items:center}.footer-container .footer{color:white}
+.footer-container{height:35px;margin-top:30px;background:#333}.footer-container .footer{display:flex;height:100%;width:50vw;margin:0 auto;font-size:13px;color:white;justify-content:space-around;align-items:center}.footer-container .footer .icon{font-size:20px}

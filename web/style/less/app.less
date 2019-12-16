@@ -1,9 +1,11 @@
 // out: ../../dist/style/app.css, compress: true, strictMath: true
 
+@import (less) '../css/owfont-regular.min.css';
 @import (less) '../css/navbar.css';
 @import (less) '../css/footer.css';
 @import (less) '../css/home.css';
 @import (less) '../css/forecast.css';
+@import (less) '../css/contact.css';
 @import (less) '../css/buttons.css';
 @import (less) '../css/normalize.css';
 
@@ -41,4 +43,9 @@ main {
   background: rgba(255, 255, 255, 1);
   box-shadow: 0 5px 10px rgba(154, 160, 185, 0.005),
     0 15px 20px rgba(166, 173, 201, 0.02);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }

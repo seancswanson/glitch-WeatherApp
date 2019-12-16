@@ -1,0 +1,1 @@
+.link-container{display:flex;justify-content:space-around;width:50%;margin:0 auto}.link-container .icon{background-size:cover;background-position:center center;background-repeat:no-repeat;width:100px;height:100px}.link-container .github{background-image:url(github.png)}.link-container .portfolio{filter:invert();background-image:url(swansong-no-text-thick.svg)}

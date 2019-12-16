@@ -14,19 +14,29 @@ weatherApp.config(function($routeProvider) {
             controller: 'homeController',
         })
 
+        .when('/explore', {
+            templateUrl: 'web/pages/home.html',
+            controller: 'homeController',
+        })
+
         .when('/forecast', {
             templateUrl: 'web/pages/forecast.html',
             controller: 'forecastController',
+        })
+
+        .when('/contact', {
+            templateUrl: 'web/pages/contact.html',
+            controller: 'contactController',
         });
 });
 
-// Services for App "State"?
+// Service for App "State"
 weatherApp.service('stateService', [
-    'geolocationSvc',
-    function(geolocationSvc) {
+    function() {
         this.user = {
             username: 'Sean',
         };
+
         this.currentDay = Date.now();
 
         this.currentCoords = {
@@ -35,33 +45,6 @@ weatherApp.service('stateService', [
             zoom: 12,
             // autoDiscover: true,
         };
-        // this.currentLocation = geolocationSvc.getCurrentPosition();
-    },
-]);
-
-weatherApp.service('geolocationSvc', [
-    '$q',
-    '$window',
-    '$log',
-    function($q, $window, $log) {
-        // this.mymap = L.map('map').setView([51.505, -0.09], 13);
-        // this.getCurrentPosition = function() {
-        //     function success(position) {
-        //         const { latitude } = position.coords;
-        //         const { longitude } = position.coords;
-        //         const coords = { latitude, longitude };
-        //         return coords;
-        //     }
-        //     function error() {
-        //         $log.error('Unable to retrieve your location');
-        //     }
-        //     if (!navigator.geolocation) {
-        //         $log.error('Geolocation is not supported by your browser');
-        //     } else {
-        //         $log.log('Locating…');
-        //         navigator.geolocation.getCurrentPosition(success, error);
-        //     }
-        // };
     },
 ]);
 
@@ -71,6 +54,15 @@ weatherApp.directive('navbar', function() {
     return {
         replace: 'E',
         templateUrl: 'web/directives/navbar.html',
+        scope: true,
+        controller: function($scope, $element) { // eslint-disable-line
+            // Why can't the above line work with the shorthand syntax for declaring a function as a property?
+            // Eslint needed to be disable to keep functionality.
+            $scope.toggleMenu = function() {
+                const menu = document.querySelector('.navbar-mobile');
+                menu.classList.toggle('shown');
+            };
+        },
     };
 });
 
@@ -86,39 +78,93 @@ weatherApp.directive('myFooter', function() {
 weatherApp.controller('homeController', [
     '$scope',
     '$log',
+    '$resource',
     'stateService',
-    'geolocationSvc',
-    function($scope, $log, stateService, geolocationSvc) {
-        $scope.applyMapCoords = function(args) {
+    function($scope, $log, $resource, stateService) {
+        $scope.items = [];
+
+        $scope.endpoints = ['http://api.openweathermap.org/data/2.5/weather'];
+
+        $scope.apiServices = {
+            coordResult: $resource(
+                $scope.endpoints[0],
+                {
+                    callback: 'JSON_CALLBACK',
+                },
+                {
+                    get: {
+                        method: 'JSONP',
+                    },
+                }
+            ),
+        };
+
+        $scope.locationInput = document.querySelector('.location-input');
+        $scope.locationInput.addEventListener('keydown', function(event) {
+            if (event.which === 13 && $scope.city !== '') {
+                $scope.setCity();
+            }
+        });
+
+        $scope.applyMapCoords = function() {
+            $log.log(stateService.currentCoords, 'applyMapCoords');
             $scope.currentCoords = stateService.currentCoords;
-            stateService.city = {
-                isCoordinate: true,
-                name: `${$scope.currentCoords.lat},${$scope.currentCoords.lng}`,
-            };
-            // $log.log($scope.city, 'home/scope');
-            $log.log(stateService.currentCoords, 'home/state');
+
+            $scope.apiServices.coordResult
+                .get({
+                    lat: $scope.currentCoords.lat,
+                    lon: $scope.currentCoords.lng,
+                    cnt: 0,
+                    appid: '4bdd42e99d3c216e6c5b942b88dbfd15',
+                })
+                .$promise.then(function(args) {
+                    $scope.items.push(args.name);
+                    $log.log($scope.items);
+                    $scope.city = $scope.items[$scope.items.length - 1];
+                });
+        };
+
+        $scope.setCity = function() {
+            if (!$scope.city) {
+                const errorMessage = document.querySelector('.error-message');
+                errorMessage.addEventListener('click', function() {
+                    errorMessage.classList.toggle('shown');
+                });
+                errorMessage.classList.toggle('shown');
+                setTimeout(function() {
+                    errorMessage.classList.remove('shown');
+                }, 5000);
+                return;
+            }
+            window.location.href = '#/forecast';
         };
 
         $scope.$watch('city', function() {
             stateService.city = {
-                isCoordinate: false,
                 name: $scope.city,
             };
         });
     },
 ]);
 
+// weatherApp.directive('submitInput', function() {
+//     return function(scope, element, attrs) {
+//         console.log(element);
+//     };
+// });
+
 weatherApp.controller('forecastController', [
     '$scope',
     '$log',
     '$resource',
+    '$filter',
     'stateService',
-    function($scope, $log, $resource, stateService) {
+    function($scope, $log, $resource, $filter, stateService) {
         $scope.items = [];
 
         $scope.endpoints = [
-            'https://api.openweathermap.org/data/2.5/weather',
-            'https://api.openweathermap.org/data/2.5/forecast',
+            'http://api.openweathermap.org/data/2.5/weather',
+            'http://api.openweathermap.org/data/2.5/forecast',
         ];
 
         $scope.apiServices = {
@@ -146,24 +192,53 @@ weatherApp.controller('forecastController', [
             ),
         };
 
-        $scope.city = stateService.city || { name: 'Seattle' };
+        $scope.city = stateService.city || {
+            name: 'Seattle',
+        };
 
         $scope.currentDay = stateService.currentDay;
 
         $scope.getData = (function() {
-            $log.log($scope, 'scope after get');
             for (const apiService in $scope.apiServices) {
                 if (Object.prototype.hasOwnProperty.call($scope.apiServices, apiService)) {
                     const result = $scope.apiServices[apiService].get({
-                        q: $scope.city.name || 'Seattle',
+                        q: $scope.city.name,
                         cnt: 7,
                         appid: '4bdd42e99d3c216e6c5b942b88dbfd15',
                     });
                     $scope.items.push(result);
-                    $log.log($scope.items[0], $scope.items[1]);
                 }
             }
         })();
+
+        $scope.applyGridView = function() {
+            const tableViewButton = document.querySelector('.table-view');
+            const gridViewButton = document.querySelector('.grid-view');
+            const forecastResultsContainer = document.querySelector('.trihoral-results-container');
+            $log.log('clicked', forecastResultsContainer);
+            if (forecastResultsContainer.classList.contains('results-grid-view')) {
+                return;
+            }
+
+            forecastResultsContainer.classList.toggle('results-grid-view');
+            forecastResultsContainer.classList.toggle('results-table-view');
+            tableViewButton.classList.remove('selected');
+            gridViewButton.classList.add('selected');
+        };
+
+        $scope.applyTableView = function() {
+            const tableViewButton = document.querySelector('.table-view');
+            const gridViewButton = document.querySelector('.grid-view');
+            const forecastResultsContainer = document.querySelector('.trihoral-results-container');
+
+            if (forecastResultsContainer.classList.contains('results-table-view')) {
+                return;
+            }
+            forecastResultsContainer.classList.toggle('results-grid-view');
+            forecastResultsContainer.classList.toggle('results-table-view');
+            gridViewButton.classList.remove('selected');
+            tableViewButton.classList.add('selected');
+        };
 
         $log.log('Full payload', $scope.items[0], $scope.items[1]);
 
@@ -177,6 +252,12 @@ weatherApp.controller('forecastController', [
 
         $scope.convertToDate = function(dt) {
             return new Date(dt * 1000);
+        };
+
+        $scope.isDarkOut = function(dt) {
+            const time = $filter('date')($scope.convertToDate(dt), 'h');
+            const isPm = $filter('date')(time, 'a') === 'PM';
+            return time > 8 && isPm && time === 12 && isPm && time < 4 && !isPm;
         };
     },
 ]);
@@ -213,3 +294,5 @@ weatherApp.controller('mapController', [
         };
     },
 ]);
+
+weatherApp.controller('contactController', ['$scope', function($scope) {}]);
