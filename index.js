@@ -9,6 +9,6 @@ app.get('/', function(req, res) {
         res.sendFile('./web/index.html', { root: __dirname });
 });
 
-app.listen(1337, () => {
+app.listen(3000, () => {
         console.log('Server started!');
 });
